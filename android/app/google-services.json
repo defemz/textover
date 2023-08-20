@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "90615647752",
+    "project_id": "textover-a8464",
+    "storage_bucket": "textover-a8464.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:90615647752:android:1ca0bdfa82ceaac3bb0bbd",
+        "android_client_info": {
+          "package_name": "image.systemsbase.textover"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "90615647752-0eva2ch0a50uhlf1vf4t2jreal3mng0f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr_3jR16olcmpdkqkxRz5CpclKkgUt_Sc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "90615647752-0eva2ch0a50uhlf1vf4t2jreal3mng0f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
