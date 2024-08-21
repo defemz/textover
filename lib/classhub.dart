@@ -17,7 +17,7 @@ import 'database/model/DBTables.dart';
 class ClassHub  {
   List<String> assetFiles = [];
 
-  Future<bool> copyFileToWorkingDirectory(String copyFileFromName, String copyFileToName)async{
+  Future<bool?> copyFileToWorkingDirectory(String copyFileFromName, String copyFileToName)async{
 
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String workingpath = join(documentsDirectory.path, copyFileToName);
@@ -150,9 +150,9 @@ class ClassHub  {
     myPreferences.clear();
   }
 
-  Future<String> mySharedPreference(String spName,String setOrGet,String myTokenToSave)async{
+  Future<String?> mySharedPreference(String spName,String setOrGet,String myTokenToSave)async{
     SharedPreferences myPreferences = await SharedPreferences.getInstance();
-    String returnJson;
+    String? returnJson;
     if(setOrGet == 'set'){
       myPreferences.setString(spName, myTokenToSave);
     }
@@ -165,9 +165,9 @@ class ClassHub  {
     return returnJson;
   }
 
-  Future<List<String>> getMyListSharePreference(String spName)async{
+  Future<List<String>?> getMyListSharePreference(String spName)async{
     SharedPreferences myPreferences = await SharedPreferences.getInstance();
-    List<String> returnStringList;
+    List<String>? returnStringList;
     if(myPreferences.containsKey(spName)){
       returnStringList = myPreferences.getStringList(spName);
     }else{
@@ -177,9 +177,9 @@ class ClassHub  {
     return returnStringList;
   }
 
-  Future<List<String>> myListSharePreference(String spName, String setOrGet, List myTokenListToSave)async{
+  Future<List<String>?> myListSharePreference(String spName, String setOrGet, List<String> myTokenListToSave)async{
     SharedPreferences myPreferences = await SharedPreferences.getInstance();
-    List<String> returnJson;
+    List<String>? returnJson;
     if(setOrGet == 'set'){
       myPreferences.setStringList(spName, myTokenListToSave);
     }

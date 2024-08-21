@@ -15,12 +15,12 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseHelperMessages {
   static final DatabaseHelperMessages _instance = DatabaseHelperMessages.internal();
   factory DatabaseHelperMessages() => _instance;
-  static Database _db;
+  static Database? _db;
 
   Future<Database> get db async{
-    if (_db != null) return _db;
+    if (_db != null) return _db!;
     _db = await initDb();
-    return _db;
+    return _db!;
   }
 
   DatabaseHelperMessages.internal();
@@ -56,9 +56,9 @@ class DatabaseHelperMessages {
 
   Future<int> insertMessagesItems(Messages items) async {
     var dbClient = await db;
-    String category = items.category;
-    String message = items.message;
-    String favorite = items.isfavorite;
+    String category = items.category!;
+    String message = items.message!;
+    String favorite = items.isfavorite!;
     //int res = await dbClient.insert("Messages", items.toMap());
     int res = await dbClient.rawInsert("""
     INSERT INTO Messages (category, message, isfavorite)
@@ -74,7 +74,7 @@ class DatabaseHelperMessages {
   Future<List<Messages>> getAllMessagesItems() async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Messages');
-    List<Messages> dietPlanItems = new List();
+    List<Messages> dietPlanItems = [];
     for (int i = 0; i < list.length; i++) {
       Messages unit =
       Messages(list[i]["category"], list[i]["message"],list[i]["isfavorite"]);
@@ -89,7 +89,7 @@ class DatabaseHelperMessages {
   Future<List<Messages>> getMessagesByCategory(String category) async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Messages WHERE category =?', [category]);
-    List<Messages> dietPlanItems = new List();
+    List<Messages> dietPlanItems = [];
     for (int i = 0; i < list.length; i++) {
       Messages unit =
       Messages(list[i]["category"], list[i]["message"], list[i]["isfavorite"]);
@@ -103,7 +103,7 @@ class DatabaseHelperMessages {
   Future<List<Messages>> getAllFavoriteMessage() async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Messages WHERE isfavorite = "Yes"');
-    List<Messages> dietPlanItems = new List();
+    List<Messages> dietPlanItems = [];
     for (int i = 0; i < list.length; i++) {
       Messages unit =
       Messages(list[i]["category"], list[i]["message"], list[i]["isfavorite"]);
@@ -147,7 +147,7 @@ class DatabaseHelperMessages {
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Messages WHERE category = ?',
         [item.category]);
     //List<Map> list = await dbClient.rawQuery('SELECT * FROM CelebDietTable',);
-    List<Messages> messageItems = new List();
+    List<Messages> messageItems = [];
     for (int i = 0; i < list.length; i++) {
       Messages unit =
       Messages(list[i]["category"], list[i]["message"], list[i]["isfavorite"]);
@@ -172,14 +172,14 @@ class DatabaseHelperMessages {
   Future<bool> updateMessagesTable(Messages category) async {
     var dbClient = await db;
     int res =   await dbClient.update("Messages", category.toMap(),
-        where: "id = ?", whereArgs: <int>[category.id]);
+        where: "id = ?", whereArgs: <int>[category.id!]);
     return res > 0 ? true : false;
   }
 
   Future<bool> updateMessagesFavorite(Messages msg) async {
     var dbClient = await db;
     int res =   await dbClient.update("Messages", msg.toMap(),
-        where: "message = ?", whereArgs: <String>[msg.message]);
+        where: "message = ?", whereArgs: <String>[msg.message!]);
     return res > 0 ? true : false;
   }
 }
@@ -190,12 +190,12 @@ class DatabaseHelperMessages {
 class DatabaseHelperSchedule {
   static final DatabaseHelperSchedule _instance = DatabaseHelperSchedule.internal();
   factory DatabaseHelperSchedule() => _instance;
-  static Database _db;
+  static Database? _db;
 
   Future<Database> get db async{
-    if (_db != null) return _db;
+    if (_db != null) return _db!;
     _db = await initDb();
-    return _db;
+    return _db!;
   }
 
   DatabaseHelperSchedule.internal();
@@ -231,9 +231,9 @@ class DatabaseHelperSchedule {
 
   Future<int> insertScheduleItems(Schedule items) async {
     var dbClient = await db;
-    String phone = items.phoneno;
-    String msg = items.message;
-    String time = items.time;
+    String phone = items.phoneno!;
+    String msg = items.message!;
+    String time = items.time!;
     //int res = await dbClient.insert("Messages", items.toMap());
     int res = await dbClient.rawInsert("""
     INSERT INTO Messages (category, message, isfavorite)
@@ -249,7 +249,7 @@ class DatabaseHelperSchedule {
   Future<List<Schedule>> getAllScheduleItems() async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Schedule');
-    List<Schedule> scheduleItems = new List();
+    List<Schedule> scheduleItems = [];
     for (int i = 0; i < list.length; i++) {
       Schedule unit =
       Schedule(list[i]["phoneno"], list[i]["message"],list[i]["time"]);
@@ -264,7 +264,7 @@ class DatabaseHelperSchedule {
   Future<List<Messages>> getMessagesByCategory(String category) async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Messages WHERE category =?', [category]);
-    List<Messages> dietPlanItems = new List();
+    List<Messages> dietPlanItems = [];
     for (int i = 0; i < list.length; i++) {
       Messages unit =
       Messages(list[i]["category"], list[i]["message"], list[i]["isfavorite"]);
@@ -278,7 +278,7 @@ class DatabaseHelperSchedule {
   Future<List<Messages>> getFavoriteMessageByCategory(String category) async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Messages WHERE isfavorite = "Yes" AND category =?', [category]);
-    List<Messages> dietPlanItems = new List();
+    List<Messages> dietPlanItems = [];
     for (int i = 0; i < list.length; i++) {
       Messages unit =
       Messages(list[i]["category"], list[i]["message"], list[i]["isfavorite"]);
@@ -310,7 +310,7 @@ class DatabaseHelperSchedule {
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Messages WHERE message = ?',
         [item.message]);
     //List<Map> list = await dbClient.rawQuery('SELECT * FROM CelebDietTable',);
-    List<Messages> messageItems = new List();
+    List<Messages> messageItems = [];
     for (int i = 0; i < list.length; i++) {
       Messages unit =
       Messages(list[i]["category"], list[i]["message"], list[i]["isfavorite"]);
@@ -335,14 +335,14 @@ class DatabaseHelperSchedule {
   Future<bool> updateMessagesTable(Messages category) async {
     var dbClient = await db;
     int res =   await dbClient.update("Messages", category.toMap(),
-        where: "id = ?", whereArgs: <int>[category.id]);
+        where: "id = ?", whereArgs: <int>[category.id!]);
     return res > 0 ? true : false;
   }
 
   Future<bool> updateMessagesFavorite(Messages msg) async {
     var dbClient = await db;
     int res =   await dbClient.update("Messages", msg.toMap(),
-        where: "message = ?", whereArgs: <String>[msg.message]);
+        where: "message = ?", whereArgs: <String>[msg.message!]);
     return res > 0 ? true : false;
   }
 }
@@ -353,12 +353,12 @@ class DatabaseHelperSchedule {
 class DatabaseHelperNotesTable {
   static final DatabaseHelperNotesTable _instance = DatabaseHelperNotesTable.internal();
   factory DatabaseHelperNotesTable() => _instance;
-  static Database _db;
+  static Database? _db;
 
   Future<Database> get db async{
-    if (_db != null) return _db;
+    if (_db != null) return _db!;
     _db = await initDb();
-    return _db;
+    return _db!;
   }
 
   DatabaseHelperNotesTable.internal();
@@ -396,7 +396,7 @@ class DatabaseHelperNotesTable {
   Future<List<NotesTable>> getAllNotesTableItems() async {
     var dbClient = await db;
     List<Map> list = await dbClient.rawQuery('SELECT * FROM NotesTable');
-    List<NotesTable> notesTableItems = new List();
+    List<NotesTable> notesTableItems = [];
     // for (int i = 0; i < list.length; i++) {
     for (int i = list.length-1; i >= 0 ; i--) {
       NotesTable unit =
@@ -428,7 +428,7 @@ class DatabaseHelperNotesTable {
     List<Map> list = await dbClient.rawQuery('SELECT * FROM NotesTable WHERE time = ?',
         [item.time]);
     //List<Map> list = await dbClient.rawQuery('SELECT * FROM CelebDietTable',);
-    List<NotesTable> notesTableItems = new List();
+    List<NotesTable> notesTableItems = [];
     for (int i = 0; i < list.length; i++) {
       NotesTable unit =
       NotesTable(list[i]["time"], list[i]["noteBody"]);
@@ -452,7 +452,7 @@ class DatabaseHelperNotesTable {
   Future<bool> updateNotesTable(NotesTable med) async {
     var dbClient = await db;
     int res =   await dbClient.update("NotesTable", med.toMap(),
-        where: "noteBody = ?", whereArgs: <String>[med.noteBody]);
+        where: "noteBody = ?", whereArgs: <String>[med.noteBody!]);
     return res > 0 ? true : false;
   }
 }

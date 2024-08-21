@@ -3,21 +3,23 @@ import 'dart:io';
 
 import 'database/model/DBTables.dart';
 
-File bgFile;
+File? bgFile;
 
 bool myAppHasRun = false;
 bool isEditingBackground = false;
 bool isPremium = false;
 int myAdIntervalIncrement = 1;
+String bannerAdunitID = "";
+String interstitialUnitID = "";
 bool isBannerLoaded = false;
-File backImage;
+File? backImage;
 int emojiShowCount = 0;
 List<String> emojiSelectedList = [];
 //List<String> textAddedList = [];
-bool isItImageBackground;
+bool? isItImageBackground;
 bool curvedTextIsOn = false;
 /////////////////////
-String textAdded, textAdded1,textAdded2,textAdded3,textAdded4,textAdded5;
+String? textAdded, textAdded1,textAdded2,textAdded3,textAdded4,textAdded5;
 ///////////
 double topy = 90;
 double leftx = 20;
@@ -40,3 +42,6 @@ double topEy2 = 130.0;
 double leftEx2 = 15;
 double topEy3 = 150.0;
 double leftEx3 = 10;
+
+bool paymentPending = false;
+

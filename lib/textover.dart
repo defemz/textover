@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:draggable_widget/draggable_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_anywhere_menus/flutter_anywhere_menus.dart';
+//import 'package:flutter_anywhere_menus/flutter_anywhere_menus.dart';
 import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:flutter_circular_text/circular_text/model.dart';
 import 'package:flutter_circular_text/circular_text/widget.dart';
@@ -17,7 +17,8 @@ import 'package:o_color_picker/o_color_picker.dart';
 import 'package:photofilters/filters/filters.dart';
 
 import 'package:screenshot/screenshot.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
+//import 'package:share/share.dart';
 
 import 'package:textover/classhub.dart';
 import 'package:textover/savedImagecards.dart';
@@ -60,7 +61,7 @@ class TextOver extends StatefulWidget {
 class _MyTextOverState extends State<TextOver> {
   int _counter = 0;
   ScreenshotController screenshotController = ScreenshotController();
-  File _imagePicked;
+  File? _imagePicked;
   Color firstColor = Color(0xff800000);
   Color secondColor = Color(0xff8B4513);
   double topy = 90;
@@ -94,8 +95,8 @@ class _MyTextOverState extends State<TextOver> {
 
 
   List<DropdownMenuItem<double>> textSizeDropdown = [];
-  List<double> textSizes;
-  List<String> textColor;
+  List<double>? textSizes;
+  List<String>? textColor;
   Color initialTextColor = Colors.black;
   Color initialTextColor1 = Colors.black;
   Color initialTextColor2 = Colors.black;
@@ -110,14 +111,14 @@ class _MyTextOverState extends State<TextOver> {
   Color initialBufferTextColor5 = Colors.black;
 
 
-  List<DropdownMenuItem<double>> items;
+  List<DropdownMenuItem<double>>? items;
   String initialFontType = "Merienda";
   List<DropdownMenuItem<String>> textFontDropdown1 = [];
   List<DropdownMenuItem<String>> textColorDropdown = [];
-  List<String> textFonts;
+  List<String>? textFonts;
 
   String dropDownSelectedItemState2 = "Start Color";
-  List<DropdownMenuItem<double>> items1;
+  List<DropdownMenuItem<double>>? items1;
 
   double dropDownSelectedItemState = 16;
   double dropDownSelectedItemState02 = 18;
@@ -210,9 +211,9 @@ class _MyTextOverState extends State<TextOver> {
 
 
 
-  String fileName;
+  String? fileName;
   List<Filter> filters = presetFiltersList;
-  File imageFile;
+  File? imageFile;
   GlobalKey _bottomNavigationKey = GlobalKey();
   int _page = 0;
   DragController dragController = DragController();
@@ -245,7 +246,7 @@ class _MyTextOverState extends State<TextOver> {
 
   List<String> emojiList = [];
   List<String> myEmojiUrl = [];
-  int emojiSelectMargin;
+  int? emojiSelectMargin;
   bool checkedValue = false;
   bool checkedValue1 = false;
   bool checkedValue2 = false;
@@ -297,6 +298,7 @@ class _MyTextOverState extends State<TextOver> {
     myImageOrGradient = widget.gradientOrImage;
     myGlobal.backImage = imageFile;
     retrieveAssetFiles();
+    Ads.createInterstitialAd();
     if(myGlobal.curvedTextIsOn == true){
       // curvedText = true;
     }
@@ -323,37 +325,37 @@ class _MyTextOverState extends State<TextOver> {
     if(myGlobal.textAdded != null){
       textShowCount++;
       isEditing = true;
-      yourText = myGlobal.textAdded;
+      yourText = myGlobal.textAdded!;
       myTextController.text = yourText;
     }
     if(myGlobal.textAdded1 != null){
       textShowCount++;
       isEditing1 = true;
-      yourText1 = myGlobal.textAdded1;
+      yourText1 = myGlobal.textAdded1!;
       myTextController1.text = yourText1;
     }
     if(myGlobal.textAdded2 != null){
       textShowCount++;
       isEditing2 = true;
-      yourText2 = myGlobal.textAdded2;
+      yourText2 = myGlobal.textAdded2!;
       myTextController2.text = yourText2;
     }
     if(myGlobal.textAdded3 != null){
       textShowCount++;
       isEditing3 = true;
-      yourText3 = myGlobal.textAdded3;
+      yourText3 = myGlobal.textAdded3!;
       myTextController3.text = yourText3;
     }
     if(myGlobal.textAdded4 != null){
       textShowCount++;
       isEditing4 = true;
-      yourText4 = myGlobal.textAdded4;
+      yourText4 = myGlobal.textAdded4!;
       myTextController4.text = yourText4;
     }
     if(myGlobal.textAdded5 != null){
       textShowCount++;
       isEditing5 = true;
-      yourText5 = myGlobal.textAdded4;
+      yourText5 = myGlobal.textAdded4!;
       myTextController5.text = yourText5;
     }
 
@@ -368,7 +370,7 @@ class _MyTextOverState extends State<TextOver> {
     topEy3 = myGlobal.topEy3;
     leftEx3 = myGlobal.leftEx3;
 
-    ClassHub().mySharedPreference("chosenTextSize", "get", null).then((onValue){
+    ClassHub().mySharedPreference("chosenTextSize", "get", "").then((onValue){
       if(onValue != null){
         setState(() {
           dropDownSelectedItemState = double.parse(onValue);
@@ -404,7 +406,7 @@ class _MyTextOverState extends State<TextOver> {
 
     _getDropDownMenuItems();
 
-    ClassHub().mySharedPreference("chosenTextSize", "get", null).then((onValue){
+    ClassHub().mySharedPreference("chosenTextSize", "get", "").then((onValue){
       if(onValue != null){
         setState(() {
           //      dropDownSelectedItemState = double.parse(onValue);
@@ -448,7 +450,7 @@ class _MyTextOverState extends State<TextOver> {
     // myCountries = ClassHub().countriesList;
     // var i = 0;
     //for(String eachItem in widget.myListParamNames){
-    for(double eachItem in textSizes){
+    for(double eachItem in textSizes!){
       textSizeDropdown.add( new DropdownMenuItem(
         value: eachItem,
         child: Text(eachItem.toString()),
@@ -456,7 +458,7 @@ class _MyTextOverState extends State<TextOver> {
       );
     }
 
-    for(String eachItem1 in textFonts){
+    for(String eachItem1 in textFonts!){
       textFontDropdown1.add( new DropdownMenuItem(
         value: eachItem1,
         child: Text(eachItem1),
@@ -464,7 +466,7 @@ class _MyTextOverState extends State<TextOver> {
       );
     }
 
-    for(String eachItem2 in textColor){
+    for(String eachItem2 in textColor!){
       textColorDropdown.add( new DropdownMenuItem(
         value: eachItem2,
         child: Text(eachItem2),
@@ -476,26 +478,26 @@ class _MyTextOverState extends State<TextOver> {
 
 
   Future getImage1(context) async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if(pickedFile!=null){
       setState(() {
 
         imageFile = File(pickedFile.path);
         myGlobal.backImage = imageFile;
-        fileName = path.basename(imageFile.path);
+        fileName = path.basename(imageFile!.path);
       });
 
-      var image = imageLib.decodeImage(await imageFile.readAsBytes());
-      image = imageLib.copyResize(image, width: 600);
+      var image = imageLib.decodeImage(await imageFile!.readAsBytes());
+      image = imageLib.copyResize(image!, width: 600);
       Map imagefile = await Navigator.push(
         context,
         new MaterialPageRoute(
           builder: (context) => new PhotoFilterSelector(
             title: Text("Photo Filter"),
-            image: image,
+            image: image!,
             filters: presetFiltersList,
-            filename: fileName,
+            filename: fileName!,
             loader: Center(child: CircularProgressIndicator()),
             fit: BoxFit.contain,
           ),
@@ -511,7 +513,7 @@ class _MyTextOverState extends State<TextOver> {
         setState(() {
           imageFile = imagefile['image_filtered'];
         });
-        print(imageFile.path);
+        print(imageFile?.path);
       }
     }
   }
@@ -574,8 +576,9 @@ class _MyTextOverState extends State<TextOver> {
                       Navigator.of(context).pop();
                       /*Ads.createInterstitialAd();
                       myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement + 1;*/
+                      final box = context.findRenderObject() as RenderBox?;
                       ClassHub().saveToTemp(image).then((value){
-                        Share.shareFiles([value], text: 'Great picture');
+                        Share.shareXFiles([XFile(value)], text: 'Great picture', sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,);
                       });
                       //Share.share("title", "name.jpg", image, "image/jpg",text: "Download app=>  https://play.google.com/store/apps/details?id=daily.systemsbase.motivatn");
 
@@ -589,7 +592,7 @@ class _MyTextOverState extends State<TextOver> {
     );
   }
 
-  double dropDownItemToSupply(){
+  double? dropDownItemToSupply(){
 
     if(curvedTextEdit == true){
       return dropDownSelectedItemStateCurve;
@@ -618,7 +621,7 @@ class _MyTextOverState extends State<TextOver> {
     }
   }
 
-  String dropDownFontItemToSupply(){
+  String? dropDownFontItemToSupply(){
 
     if(curvedTextEdit == true){
       return dropDownSelectedItemState1Curve;
@@ -671,7 +674,7 @@ class _MyTextOverState extends State<TextOver> {
     return Colors.blue;
   }
 
-  bool chosenCheckbox(){
+  bool? chosenCheckbox(){
 
 
     if(isEditingProp == true){
@@ -696,7 +699,7 @@ class _MyTextOverState extends State<TextOver> {
     }
   }
 
-  bool chosenCheckboxBold(){
+  bool? chosenCheckboxBold(){
     if(curvedTextEdit == true){
       return boldCurve;
     }
@@ -724,7 +727,7 @@ class _MyTextOverState extends State<TextOver> {
     }
   }
 
-  bool chosenCheckboxBoldItalics(){
+  bool? chosenCheckboxBoldItalics(){
 
     if(curvedTextEdit == true){
       return italicsCurve;
@@ -795,22 +798,22 @@ class _MyTextOverState extends State<TextOver> {
 
 
                                 if(isEditingProp == true){
-                                  checkedValue = value;
+                                  checkedValue = value!;
                                 }
                                 if(isEditingProp1 == true){
-                                  checkedValue1 = value;
+                                  checkedValue1 = value!;
                                 }
                                 if(isEditingProp2 == true){
-                                  checkedValue2 = value;
+                                  checkedValue2 = value!;
                                 }
                                 if(isEditingProp3 == true){
-                                  checkedValue3 = value;
+                                  checkedValue3 = value!;
                                 }
                                 if(isEditingProp4 == true){
-                                  checkedValue4 = value;
+                                  checkedValue4 = value!;
                                 }
                                 if(isEditingProp5 == true){
-                                  checkedValue5 = value;
+                                  checkedValue5 = value!;
                                 }
                               });
 
@@ -825,29 +828,29 @@ class _MyTextOverState extends State<TextOver> {
                               setState(() {
 
                                 if(curvedTextEdit == true){
-                                  boldCurve = value;
+                                  boldCurve = value!;
                                 }
                                 if(curvedTextEdit1 == true){
-                                  boldCurve1 = value;
+                                  boldCurve1 = value!;
                                 }
 
                                 if(isEditingProp == true){
-                                  bold = value;
+                                  bold = value!;
                                 }
                                 if(isEditingProp1 == true){
-                                  bold1 = value;
+                                  bold1 = value!;
                                 }
                                 if(isEditingProp2 == true){
-                                  bold2 = value;
+                                  bold2 = value!;
                                 }
                                 if(isEditingProp3 == true){
-                                  bold3 = value;
+                                  bold3 = value!;
                                 }
                                 if(isEditingProp4 == true){
-                                  bold4 = value;
+                                  bold4 = value!;
                                 }
                                 if(isEditingProp5 == true){
-                                  bold5 = value;
+                                  bold5 = value!;
                                 }
                               });
 
@@ -862,29 +865,29 @@ class _MyTextOverState extends State<TextOver> {
                               setState(() {
 
                                 if(curvedTextEdit == true){
-                                  italicsCurve = value;
+                                  italicsCurve = value!;
                                 }
                                 if(curvedTextEdit1 == true){
-                                  italicsCurve1 = value;
+                                  italicsCurve1 = value!;
                                 }
 
                                 if(isEditingProp == true){
-                                  italics = value;
+                                  italics = value!;
                                 }
                                 if(isEditingProp1 == true){
-                                  italics1 = value;
+                                  italics1 = value!;
                                 }
                                 if(isEditingProp2 == true){
-                                  italics2 = value;
+                                  italics2 = value!;
                                 }
                                 if(isEditingProp3 == true){
-                                  italics3 = value;
+                                  italics3 = value!;
                                 }
                                 if(isEditingProp4 == true){
-                                  italics4 = value;
+                                  italics4 = value!;
                                 }
                                 if(isEditingProp5 == true){
-                                  italics5 = value;
+                                  italics5 = value!;
                                 }
                               });
 
@@ -911,33 +914,33 @@ class _MyTextOverState extends State<TextOver> {
                                       fontFamily: 'Delius'),
                                   value: dropDownItemToSupply(),
                                   items: textSizeDropdown,
-                                  onChanged: (double selectValue){
+                                  onChanged: (double? selectValue){
                                     setState(() {
 
                                       if(curvedTextEdit == true){
-                                        dropDownSelectedItemStateCurve = selectValue;
+                                        dropDownSelectedItemStateCurve = selectValue!;
                                       }
                                       if(curvedTextEdit1 == true){
-                                        dropDownSelectedItemStateCurve1 = selectValue;
+                                        dropDownSelectedItemStateCurve1 = selectValue!;
                                       }
 
                                       if(isEditingProp == true){
-                                        dropDownSelectedItemState = selectValue;
+                                        dropDownSelectedItemState = selectValue!;
                                       }
                                       if(isEditingProp1 == true){
-                                        dropDownSelectedItemState02 = selectValue;
+                                        dropDownSelectedItemState02 = selectValue!;
                                       }
                                       if(isEditingProp2 == true){
-                                        dropDownSelectedItemState03 = selectValue;
+                                        dropDownSelectedItemState03 = selectValue!;
                                       }
                                       if(isEditingProp3 == true){
-                                        dropDownSelectedItemState04 = selectValue;
+                                        dropDownSelectedItemState04 = selectValue!;
                                       }
                                       if(isEditingProp4 == true){
-                                        dropDownSelectedItemState05 = selectValue;
+                                        dropDownSelectedItemState05 = selectValue!;
                                       }
                                       if(isEditingProp5 == true){
-                                        dropDownSelectedItemState06 = selectValue;
+                                        dropDownSelectedItemState06 = selectValue!;
                                       }
                                       ClassHub().mySharedPreference("chosenTextSize", "set", dropDownSelectedItemState.toString()).then((onValue){
 
@@ -968,34 +971,34 @@ class _MyTextOverState extends State<TextOver> {
                                       fontFamily: 'Delius'),
                                   value: dropDownFontItemToSupply(),
                                   items: textFontDropdown1,
-                                  onChanged: (String selectValue){
+                                  onChanged: (String? selectValue){
                                     setState(() {
 
                                       if(curvedTextEdit == true){
-                                        dropDownSelectedItemState1Curve = selectValue;
+                                        dropDownSelectedItemState1Curve = selectValue!;
                                       }
                                       if(curvedTextEdit1 == true){
-                                        dropDownSelectedItemState1Curve1 = selectValue;
+                                        dropDownSelectedItemState1Curve1 = selectValue!;
                                       }
 
                                       if(isEditingProp == true){
                                         //isEditing = false;
-                                        dropDownSelectedItemState1 = selectValue;
+                                        dropDownSelectedItemState1 = selectValue!;
                                       }
                                       if(isEditingProp1 == true){
-                                        dropDownSelectedItemState12 = selectValue;
+                                        dropDownSelectedItemState12 = selectValue!;
                                       }
                                       if(isEditingProp2 == true){
-                                        dropDownSelectedItemState13 = selectValue;
+                                        dropDownSelectedItemState13 = selectValue!;
                                       }
                                       if(isEditingProp3 == true){
-                                        dropDownSelectedItemState14 = selectValue;
+                                        dropDownSelectedItemState14 = selectValue!;
                                       }
                                       if(isEditingProp4 == true){
-                                        dropDownSelectedItemState15 = selectValue;
+                                        dropDownSelectedItemState15 = selectValue!;
                                       }
                                       if(isEditingProp5 == true){
-                                        dropDownSelectedItemState16 = selectValue;
+                                        dropDownSelectedItemState16 = selectValue!;
                                       }
                                     });
                                   },
@@ -1071,7 +1074,7 @@ class _MyTextOverState extends State<TextOver> {
                           Container(
                             // width: MediaQuery.of(context).size.width,
                             child: CircleColorPicker(
-                              initialColor: dropDownInitialColorItemToSupply(),
+                              //initialColor: dropDownInitialColorItemToSupply(),
                               onChanged: (color) => {
                                 setState((){
                                   // initialTextColor = color;
@@ -1158,7 +1161,7 @@ class _MyTextOverState extends State<TextOver> {
 
 
   Future<void> emojiDialog() {
-    String emojiUrlBuffer;
+    String emojiUrlBuffer = "";
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -1392,22 +1395,22 @@ class _MyTextOverState extends State<TextOver> {
                                       fontFamily: 'Delius'),
                                   value: dropDownItemToSupply(),
                                   items: textSizeDropdown,
-                                  onChanged: (double selectValue){
+                                  onChanged: (double? selectValue){
                                     setState(() {
                                       if(isEditing == true){
-                                        dropDownSelectedItemState = selectValue;
+                                        dropDownSelectedItemState = selectValue!;
                                       }
                                       if(isEditing1 == true){
-                                        dropDownSelectedItemState02 = selectValue;
+                                        dropDownSelectedItemState02 = selectValue!;
                                       }
                                       if(isEditing2 == true){
-                                        dropDownSelectedItemState03 = selectValue;
+                                        dropDownSelectedItemState03 = selectValue!;
                                       }
                                       if(isEditing3 == true){
-                                        dropDownSelectedItemState04 = selectValue;
+                                        dropDownSelectedItemState04 = selectValue!;
                                       }
                                       if(isEditing4 == true){
-                                        dropDownSelectedItemState05 = selectValue;
+                                        dropDownSelectedItemState05 = selectValue!;
                                       }
                                       ClassHub().mySharedPreference("chosenTextSize", "set", dropDownSelectedItemState.toString()).then((onValue){
 
@@ -1438,23 +1441,23 @@ class _MyTextOverState extends State<TextOver> {
                                       fontFamily: 'Delius'),
                                   value: dropDownFontItemToSupply(),
                                   items: textFontDropdown1,
-                                  onChanged: (String selectValue){
+                                  onChanged: (String? selectValue){
                                     setState(() {
                                       if(isEditing == true){
                                         //isEditing = false;
-                                        dropDownSelectedItemState1 = selectValue;
+                                        dropDownSelectedItemState1 = selectValue!;
                                       }
                                       if(isEditing1 == true){
-                                        dropDownSelectedItemState12 = selectValue;
+                                        dropDownSelectedItemState12 = selectValue!;
                                       }
                                       if(isEditing2 == true){
-                                        dropDownSelectedItemState13 = selectValue;
+                                        dropDownSelectedItemState13 = selectValue!;
                                       }
                                       if(isEditing3 == true){
-                                        dropDownSelectedItemState14 = selectValue;
+                                        dropDownSelectedItemState14 = selectValue!;
                                       }
                                       if(isEditing4 == true){
-                                        dropDownSelectedItemState15 = selectValue;
+                                        dropDownSelectedItemState15 = selectValue!;
                                       }
                                     });
                                   },
@@ -1596,9 +1599,9 @@ class _MyTextOverState extends State<TextOver> {
                                   fontFamily: 'Delius'),
                               value: dropDownSelectedItemState2,
                               items: textColorDropdown,
-                              onChanged: (String selectValue){
+                              onChanged: (String? selectValue){
                                 setState(() {
-                                  dropDownSelectedItemState2 = selectValue;
+                                  dropDownSelectedItemState2 = selectValue!;
                                 });
                                 // Navigator.of(context).pop();
 
@@ -1699,7 +1702,7 @@ class _MyTextOverState extends State<TextOver> {
   }
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.values[1]);
+    final pickedFile = await picker.pickImage(source: ImageSource.values[1]);
 
     setState(() {
       if (pickedFile != null) {
@@ -1814,7 +1817,7 @@ class _MyTextOverState extends State<TextOver> {
     // return Container();
   }
 
-  int whichTextDegree(){
+  int? whichTextDegree(){
 
     if(isRotateCurveEditing == true){
       return degreeCurve;
@@ -1842,7 +1845,7 @@ class _MyTextOverState extends State<TextOver> {
     }
   }
 
-  double whichCurveDiameter(){
+  double? whichCurveDiameter(){
 
     if(curvedTextEdit == true){
       return curveDiameter;
@@ -1940,8 +1943,8 @@ class _MyTextOverState extends State<TextOver> {
                   isEmojiEditing3 = false;
                   isEmojiEditing4 = false;
                 });
-                screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List image){
-                  ClassHub().saveMediaCard(image);
+                screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List? image){
+                  ClassHub().saveMediaCard(image!);
                 }).catchError((onError) {
                   //   print(onError);
                 });
@@ -1963,22 +1966,22 @@ class _MyTextOverState extends State<TextOver> {
                   isEmojiEditing3 = false;
                   isEmojiEditing4 = false;
                 });
-                screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List image){
+                screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List? image){
                   //_imageFile = image;
                   //////////////////
                   if(Ads.checkAdIntervals() == true){
-                    Ads.createInterstitialAd();
+                    Ads.showInterstitialAd();
                     myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
 
                     Ads.delayAdDialog(context);
-                    Future.delayed(Duration(seconds: 3),(){
+                    Future.delayed(Duration(seconds: 0),(){
                       Navigator.of(context).pop();
-                      _displayImageSnapshot(image);
+                      _displayImageSnapshot(image!);
                       //Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(false,null,null)));
 
                     });
                   }else{
-                    _displayImageSnapshot(image);
+                    _displayImageSnapshot(image!);
                     myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
                   }
 
@@ -1992,125 +1995,10 @@ class _MyTextOverState extends State<TextOver> {
         ],
       );
     }
-    return
 
-      isEmojiEditing == true || isEmojiEditing1 == true || isEmojiEditing2 == true ||
-          isEmojiEditing3 == true || isEmojiEditing4 == true?Row(mainAxisAlignment: MainAxisAlignment.center,
-          children:[
-            Container(
-              margin: EdgeInsets.only(right: 12),
-              child: GestureDetector(
-                child: Icon(Icons.delete),
-                onTap: (){
-                  setState(() {
-                    if(curvedTextEdit == true){
-                      curvedText = false;
-                      curvedTextEdit = false;
-                    }
-                    if(isEmojiEditing == true){
-                      myEmojiUrl.removeWhere((element) => myEmojiUrl[0] == element);
-                      myGlobal.emojiShowCount--;
-                      isEmojiEditing = false;
-                      isEmojiEditing1 = false;
-                      isEmojiEditing2 = false;
-                      isEmojiEditing3 = false;
-                      isEmojiEditing4 = false;
-                    }
-                    if(isEmojiEditing1 == true){
-                      myEmojiUrl.removeWhere((element) => myEmojiUrl[1] == element);
-                      myGlobal.emojiShowCount--;
-                      isEmojiEditing = false;
-                      isEmojiEditing1 = false;
-                      isEmojiEditing2 = false;
-                      isEmojiEditing3 = false;
-                      isEmojiEditing4 = false;
-                    }
-                    if(isEmojiEditing2 == true){
-                      myEmojiUrl.removeWhere((element) => myEmojiUrl[2] == element);
-                      myGlobal.emojiShowCount--;
-                      isEmojiEditing = false;
-                      isEmojiEditing1 = false;
-                      isEmojiEditing2 = false;
-                      isEmojiEditing3 = false;
-                      isEmojiEditing4 = false;
-                    }
-                    if(isEmojiEditing3 == true){
-                      myEmojiUrl.removeWhere((element) => myEmojiUrl[3] == element);
-                      myGlobal.emojiShowCount--;
-                      isEmojiEditing = false;
-                      isEmojiEditing1 = false;
-                      isEmojiEditing2 = false;
-                      isEmojiEditing3 = false;
-                      isEmojiEditing4 = false;
-                    }
-                    if(isEmojiEditing4 == true){
-                      myEmojiUrl.removeWhere((element) => myEmojiUrl[4] == element);
-                      myGlobal.emojiShowCount--;
-                      isEmojiEditing = false;
-                      isEmojiEditing1 = false;
-                      isEmojiEditing2 = false;
-                      isEmojiEditing3 = false;
-                      isEmojiEditing4 = false;
-                    }
-
-                  });
-                },
-              ),
-            ),
-          ]
-      ):Row(
-        children: [
-          Container(
-            margin: EdgeInsets.only(right: 7),
-            child: GestureDetector(
-              child: Icon(Icons.save),
-              onTap: (){
-                setState(() {
-                  isEmojiEditing = false;
-                  isEmojiEditing1 = false;
-                  isEmojiEditing2 = false;
-                  isEmojiEditing3 = false;
-                  isEmojiEditing4 = false;
-                });
-                screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List image){
-                  ClassHub().saveMediaCard(image);
-                }).catchError((onError) {
-                  //   print(onError);
-                });
-
-
-              },
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(right: 15),
-            child: GestureDetector(
-              child: Icon(Icons.share),
-              onTap: (){
-                //Ads.createInterstitialAd();
-                setState(() {
-                  isEmojiEditing = false;
-                  isEmojiEditing1 = false;
-                  isEmojiEditing2 = false;
-                  isEmojiEditing3 = false;
-                  isEmojiEditing4 = false;
-                });
-                screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List image){
-                  //_imageFile = image;
-                  //////////////////
-                  _displayImageSnapshot(image);
-                  ///////////////////
-                }).catchError((onError) {
-                  //   print(onError);
-                });
-              },
-            ),
-          ),
-        ],
-      );
   }
 
-  double myFontSize(BuildContext context){
+  myFontSize(BuildContext context){
     double y = MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio;
     double x = MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio;
     final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
@@ -2173,7 +2061,7 @@ class _MyTextOverState extends State<TextOver> {
 
   }
 
-  double myHeight(BuildContext context){
+  myHeight(BuildContext context){
     double y = MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio;
     double x = MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio;
     final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
@@ -2474,8 +2362,8 @@ class _MyTextOverState extends State<TextOver> {
                       isEmojiEditing3 = false;
                       isEmojiEditing4 = false;
                     });
-                    screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List image){
-                      ClassHub().saveMediaCard(image);
+                    screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List? image){
+                      ClassHub().saveMediaCard(image!);
                     }).catchError((onError) {
                       //   print(onError);
                     });
@@ -2497,10 +2385,10 @@ class _MyTextOverState extends State<TextOver> {
                       isEmojiEditing3 = false;
                       isEmojiEditing4 = false;
                     });
-                    screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List image){
+                    screenshotController.capture(delay: Duration(milliseconds: 10)).then((Uint8List? image){
                       //_imageFile = image;
                       //////////////////
-                      _displayImageSnapshot(image);
+                      _displayImageSnapshot(image!);
                       ///////////////////
                     }).catchError((onError) {
                       //   print(onError);
@@ -2704,7 +2592,7 @@ class _MyTextOverState extends State<TextOver> {
                     child: Stack(
                       //mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        imageFile != null && myImageOrGradient == true?Image.file(imageFile,height: MediaQuery.of(context).size.height,fit: BoxFit.fill,):Container(),
+                        imageFile != null && myImageOrGradient == true?Image.file(imageFile!,height: MediaQuery.of(context).size.height,fit: BoxFit.fill,):Container(),
 
                         //////////////////////////////////////////////////////////////////
                         curvedText == true?Positioned(
@@ -3420,7 +3308,7 @@ class _MyTextOverState extends State<TextOver> {
                     min: 0,
                     max: 360,
                     divisions: 360,
-                    value: whichTextDegree().toDouble(),
+                    value: whichTextDegree()!.toDouble(),
                     label: whichTextDegree().toString(),
                     onChanged: (value) {
                       shrinkStretchEmoji(value);
@@ -3593,11 +3481,11 @@ class _MyTextOverState extends State<TextOver> {
             getImage1(context);*/
 
             if(Ads.checkAdIntervals() == true){
-              Ads.createInterstitialAd();
+              Ads.showInterstitialAd();
               myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
 
               Ads.delayAdDialog(context);
-              Future.delayed(Duration(seconds: 3),(){
+              Future.delayed(Duration(seconds: 0),(){
                 Navigator.of(context).pop();
                 getImage1(context);
                 //Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(false,null,null)));
@@ -3615,11 +3503,11 @@ class _MyTextOverState extends State<TextOver> {
             _setColorGradient();*/
 
             if(Ads.checkAdIntervals() == true){
-              Ads.createInterstitialAd();
+              Ads.showInterstitialAd();
               myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
 
               Ads.delayAdDialog(context);
-              Future.delayed(Duration(seconds: 3),(){
+              Future.delayed(Duration(seconds: 0),(){
                 Navigator.of(context).pop();
                 _setColorGradient();
                 //Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(false,null,null)));

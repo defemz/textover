@@ -1,8 +1,8 @@
 class Messages {
-  int id;
-  String _category;
-  String _message;
-  String _isfavorite;
+  int? id;
+  String? _category;
+  String? _message;
+  String? _isfavorite;
 
 
 
@@ -15,9 +15,9 @@ class Messages {
 
   }
 
-  String get category => _category;
-  String get message => _message;
-  String get isfavorite => _isfavorite;
+  String? get category => _category;
+  String? get message => _message;
+  String? get isfavorite => _isfavorite;
 
 
   Map<String, dynamic> toMap() {
@@ -35,10 +35,10 @@ class Messages {
 
 ///////////////////////////////////////////////
 class Schedule {
-  int id;
-  String _phoneno;
-  String _message;
-  String _time;
+  int? id;
+  String? _phoneno;
+  String? _message;
+  String? _time;
 
 
 
@@ -51,9 +51,9 @@ class Schedule {
 
   }
 
-  String get phoneno => _phoneno;//e.g western food
-  String get message => _message;
-  String get time => _time;
+  String? get phoneno => _phoneno;//e.g western food
+  String? get message => _message;
+  String? get time => _time;
 
 
   Map<String, dynamic> toMap() {
@@ -73,9 +73,9 @@ class Schedule {
 
 
 class NotesTable {
-  int id;
-  String _time;//e.g western food
-  String _noteBody;
+  int? id;
+  String? _time;//e.g western food
+  String? _noteBody;
 
 
 
@@ -90,8 +90,8 @@ class NotesTable {
 
   }
 
-  String get time => _time;//e.g western food
-  String get noteBody => _noteBody;
+  String? get time => _time;//e.g western food
+  String? get noteBody => _noteBody;
 
 
 

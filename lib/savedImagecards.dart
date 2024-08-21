@@ -8,7 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
+//import 'package:share/share.dart';
 import 'dart:io' as io;
 import 'global.dart' as myGlobal;
 
@@ -31,7 +32,7 @@ class _MyImageCardsState extends State<ImageCards> {
   List<String> imageList = [];
 
   int swipeIndex = 0;
-  File _imagePicked;
+  File? _imagePicked;
   final picker = ImagePicker();
 
   bool toShowAdBanner = true;
@@ -79,7 +80,7 @@ class _MyImageCardsState extends State<ImageCards> {
   }
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.values[1]);
+    final pickedFile = await picker.pickImage(source: ImageSource.values[1]);
 
     setState(() {
       if (pickedFile != null) {
@@ -215,7 +216,8 @@ class _MyImageCardsState extends State<ImageCards> {
               child: TextButton(
                 child: Text("SHARE"),
                 onPressed: (){
-                  Share.shareFiles([filename], text: 'Beautiful card saying for you');
+                  final box = context.findRenderObject() as RenderBox?;
+                  Share.shareXFiles([XFile(filename)], text: 'Beautiful card saying for you', sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,);
                 },
               ),
             ),
@@ -231,7 +233,7 @@ class _MyImageCardsState extends State<ImageCards> {
     return MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - kToolbarHeight- kBottomNavigationBarHeight - 70 ;
   }*/
 
-  double myFontSize(BuildContext context){
+  double? myFontSize(BuildContext context){
     double y = MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio;
     double x = MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio;
     final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
@@ -294,7 +296,7 @@ class _MyImageCardsState extends State<ImageCards> {
 
   }
 
-  double myHeight(BuildContext context){
+  double? myHeight(BuildContext context){
     double y = MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio;
     double x = MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio;
     final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);

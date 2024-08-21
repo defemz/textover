@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -14,8 +15,12 @@ import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+
 import 'package:textover/classhub.dart';
 import 'package:textover/editimage.dart';
+import 'package:textover/payhub.dart';
 import 'package:textover/savedImagecards.dart';
 import 'package:textover/textover.dart';
 import 'package:textover/upgrade.dart';
@@ -24,10 +29,11 @@ import 'adclass.dart';
 import 'global.dart' as myGlobal;
 
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  InAppPurchaseConnection.enablePendingPurchases();
+  await Firebase.initializeApp();
+  //InAppPurchaseConnection.enablePendingPurchases();
   runApp(MyApp());
 }
 
@@ -50,13 +56,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         
       ),
-      home: MyHomePage(title: 'TextOver'),
+      home: MyHomePage(title: 'TextOver', key: UniqueKey(),),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({required Key key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -76,26 +82,26 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   ScreenshotController screenshotController = ScreenshotController();
-  File _imagePicked;
+  File? _imagePicked;
   Color firstColor = Color(0xff800000);
   Color secondColor = Color(0xff8B4513);
   double topy = 100.0;
 
   List<DropdownMenuItem<double>> textSizeDropdown = [];
-  List<double> textSizes;
-  List<String> textColor;
+  List<double>? textSizes;
+  List<String>? textColor;
   Color initialTextColor = Colors.white;
   Color initialBufferTextColor = Colors.white;
 
   double dropDownSelectedItemState = 22;
-  List<DropdownMenuItem<double>> items;
+  List<DropdownMenuItem<double>>? items;
   String initialFontType = "Merienda";
   List<DropdownMenuItem<String>> textFontDropdown1 = [];
   List<DropdownMenuItem<String>> textColorDropdown = [];
-  List<String> textFonts;
+  List<String>? textFonts;
   String dropDownSelectedItemState1 = "Merienda";
   String dropDownSelectedItemState2 = "Start Color";
-  List<DropdownMenuItem<double>> items1;
+  List<DropdownMenuItem<double>>? items1;
 
   bool isEditing = false;
   final picker = ImagePicker();
@@ -104,16 +110,36 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> imageList = [];
   List<int> testList = [1,2,3,4,5,6];
   bool isConnectedToInternet = false;
-  BannerAd myMediumBanner;
+  BannerAd? myMediumBanner;
   int appRunCountValue = 0;
+  StreamSubscription<List<PurchaseDetails>>? _subscription;
+  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
 
 
 
   @override
   void initState(){
     super.initState();
-    myMediumBanner =  Ads.banner(false);
+    myMediumBanner =  Ads.banner();
     versionCheck(context);
+
+    final Stream<List<PurchaseDetails>> purchaseUpdated = _inAppPurchase.purchaseStream;
+    _subscription = purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
+      // _listenToPurchaseUpdated(purchaseDetailsList);
+      PayHub.listenToPurchaseUpdated(purchaseDetailsList).then((value) {
+        ClassHub().mySharedPreference("premiumTokenSP", "get", '').then((value){
+          if(value == "Yes"){
+            myGlobal.isPremium = true;
+          }else if(value == "No"){
+            myGlobal.isPremium = false;
+          }
+        });
+      });
+    }, onDone: () {
+      _subscription?.cancel();
+    }, onError: (Object error) {
+      // handle error here.
+    });
 
     Ads.checkSubSub(1).then((value){
       if(value == "Yes"){
@@ -131,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    ClassHub().mySharedPreference("chosenTextSize", "get", null).then((onValue){
+    ClassHub().mySharedPreference("chosenTextSize", "get", "").then((onValue){
       if(onValue != null){
         setState(() {
           dropDownSelectedItemState = double.parse(onValue);
@@ -168,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _getDropDownMenuItems();
 
-    ClassHub().mySharedPreference("chosenTextSize", "get", null).then((onValue){
+    ClassHub().mySharedPreference("chosenTextSize", "get", "").then((onValue){
       if(onValue != null){
         setState(() {
           //      dropDownSelectedItemState = double.parse(onValue);
@@ -181,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // ClassHub().populateDatabase(1).then((value) {
-    ClassHub().mySharedPreference("newInstall", "get", null).then((value) {
+    ClassHub().mySharedPreference("newInstall", "get", "").then((value) {
       if(value == "Yes" || value == null){
         ClassHub().saveAllMedia();
           /*Flushbar(
@@ -202,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //    });
 
     ///This code block prompt user to rate/review the app &&&&&&&&&&&&&&&
-    ClassHub().mySharedPreference("appRunCount", "get", null).then((value) {
+    ClassHub().mySharedPreference("appRunCount", "get", "").then((value) {
 
       if(value != null){
 
@@ -215,7 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         });
         ///////////////////////////
-        ClassHub().mySharedPreference("ratedApp", "get", null).then((value) {
+        ClassHub().mySharedPreference("ratedApp", "get", "").then((value) {
           if(value != "Yes" || value == null){
             if((appRunCountValue % 3 == 0 && myGlobal.myAppHasRun == false )){
               print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
@@ -244,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         });
 
-        ClassHub().mySharedPreference("ratedApp", "get", null).then((value) {
+        ClassHub().mySharedPreference("ratedApp", "get", "").then((value) {
           if(value != "Yes" || value == null){
             if((appRunCountValue % 3 == 0 && myGlobal.myAppHasRun == false )){
               print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
@@ -288,7 +314,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // myCountries = ClassHub().countriesList;
     // var i = 0;
     //for(String eachItem in widget.myListParamNames){
-    for(double eachItem in textSizes){
+    for(double eachItem in textSizes!){
       textSizeDropdown.add( new DropdownMenuItem(
         value: eachItem,
         child: Text(eachItem.toString()),
@@ -296,7 +322,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-    for(String eachItem1 in textFonts){
+    for(String eachItem1 in textFonts!){
       textFontDropdown1.add( new DropdownMenuItem(
         value: eachItem1,
         child: Text(eachItem1),
@@ -304,7 +330,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-    for(String eachItem2 in textColor){
+    for(String eachItem2 in textColor!){
       textColorDropdown.add( new DropdownMenuItem(
         value: eachItem2,
         child: Text(eachItem2),
@@ -331,12 +357,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // double currentVersion = double.parse(info.version);
 
     //Get Latest version info from firebase config
-    final RemoteConfig remoteConfig = RemoteConfig.instance;
+    final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
+    await remoteConfig.fetchAndActivate();
 
     try {
       // Using default duration to force fetching from remote server.
-      await remoteConfig.fetch();
-      await remoteConfig.activate();
       remoteConfig.getString('app_current_version');
       double newVersion = double.parse(remoteConfig
           .getString('app_current_version')
@@ -344,6 +369,7 @@ class _MyHomePageState extends State<MyHomePage> {
           .replaceAll(".", ""));
       //print("new Version");
       //print(newVersion);
+      Ads.createInterstitialAd();
       if (newVersion > currentVersion) {
         _showVersionDialog(context).then((onValue){
 
@@ -420,11 +446,11 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(title),
           content: Text(message),
           actions: <Widget>[
-            FlatButton(
+            OutlinedButton(
               child: Text(btnLabel),
               onPressed: () => _launchMailURL('https://play.google.com/store/apps/details?id=image.systemsbase.textover'),
             ),
-            FlatButton(
+            OutlinedButton(
               child: Text(btnLabelCancel),
               onPressed: () => Navigator.pop(context),
             ),
@@ -434,14 +460,14 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(title),
           content: Text(message),
           actions: <Widget>[
-            FlatButton(
+            OutlinedButton(
                 child: Text(btnLabel),
                 onPressed: () {
                   ClassHub().mySharedPreference("ratedApp", "set", "Yes");
                   _launchMailURL('https://play.google.com/store/apps/details?id=image.systemsbase.textover');
                 }
             ),
-            FlatButton(
+            OutlinedButton(
               child: Text(btnLabelCancel),
               onPressed: () => Navigator.pop(context),
             ),
@@ -559,7 +585,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Container(
                             // width: MediaQuery.of(context).size.width,
                             child: CircleColorPicker(
-                              initialColor: Colors.blue,
+                              //initialColor: Colors.blue,
                               onChanged: (color) => {
                                 setState((){
                                   // initialTextColor = color;
@@ -587,13 +613,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: DropdownButton(
                                   isDense: true,
                                   //isDense: true,
-                                  style: TextStyle(fontSize: (myHeight(context)/100)*3.2,color: Colors.black,
+                                  style: TextStyle(fontSize: (myHeight(context)!/100)*3.2,color: Colors.black,
                                       fontFamily: 'Delius'),
                                   value: dropDownSelectedItemState,
                                   items: textSizeDropdown,
-                                  onChanged: (double selectValue){
+                                  onChanged: (double? selectValue){
                                     setState(() {
-                                      dropDownSelectedItemState = selectValue;
+                                      dropDownSelectedItemState = selectValue!;
                                       ClassHub().mySharedPreference("chosenTextSize", "set", dropDownSelectedItemState.toString()).then((onValue){
 
                                       });
@@ -619,13 +645,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: DropdownButton(
                                   isDense: true,
                                   //isDense: true,
-                                  style: TextStyle(fontSize: (myHeight(context)/100)*3.2,color: Colors.black,
+                                  style: TextStyle(fontSize: (myHeight(context)!/100)*3.2,color: Colors.black,
                                       fontFamily: 'Delius'),
                                   value: dropDownSelectedItemState1,
                                   items: textFontDropdown1,
-                                  onChanged: (String selectValue){
+                                  onChanged: (String? selectValue){
                                     setState(() {
-                                      dropDownSelectedItemState1 = selectValue;
+                                      dropDownSelectedItemState1 = selectValue!;
                                     });
                                   },
                                 ),
@@ -698,13 +724,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: DropdownButton(
                               isDense: true,
                               //isDense: true,
-                              style: TextStyle(fontSize: (myHeight(context)/100)*3.2,color: Colors.black,
+                              style: TextStyle(fontSize: (myHeight(context)!/100)*3.2,color: Colors.black,
                                   fontFamily: 'Delius'),
                               value: dropDownSelectedItemState2,
                               items: textColorDropdown,
-                              onChanged: (String selectValue){
+                              onChanged: (String? selectValue){
                                 setState(() {
-                                  dropDownSelectedItemState2 = selectValue;
+                                  dropDownSelectedItemState2 = selectValue!;
                                 });
                               },
                             ),
@@ -715,7 +741,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           Container(
                             //width: MediaQuery.of(context).size.width,
                             child: CircleColorPicker(
-                              initialColor: firstColor,
+                              //initialColor: firstColor,
+
                               onChanged: (color) => {
                                 setState((){
                                   if(dropDownSelectedItemState2 == "Start Color") {
@@ -784,17 +811,16 @@ class _MyHomePageState extends State<MyHomePage> {
         myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement + 1;*/
 
         if(Ads.checkAdIntervals() == true){
-          Ads.createInterstitialAd();
+          Ads.showInterstitialAd();
           myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
 
           Ads.delayAdDialog(context);
-          Future.delayed(Duration(seconds: 3),(){
+          Future.delayed(Duration(seconds: 0),(){
             Navigator.of(context).pop();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(true,_imagePicked,null)));
-
+            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(true,_imagePicked!,[])));
           });
         }else{
-          Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(true,_imagePicked,null)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(true,_imagePicked!,[])));
 
           myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
         }
@@ -817,17 +843,17 @@ class _MyHomePageState extends State<MyHomePage> {
         myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement + 1;*/
 
         if(Ads.checkAdIntervals() == true){
-          Ads.createInterstitialAd();
+          Ads.showInterstitialAd();
           myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
 
           Ads.delayAdDialog(context);
-          Future.delayed(Duration(seconds: 3),(){
+          Future.delayed(Duration(seconds: 0),(){
             Navigator.of(context).pop();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(true,_imagePicked,null)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(true,_imagePicked!,[])));
 
           });
         }else{
-          Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(true,_imagePicked,null)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(true,_imagePicked!,[])));
 
           myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
         }
@@ -852,7 +878,7 @@ class _MyHomePageState extends State<MyHomePage> {
    );
   }
 
-  double myFontSize(BuildContext context){
+  double? myFontSize(BuildContext context){
     double y = MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio;
     double x = MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio;
     final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
@@ -915,7 +941,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  double myHeight(BuildContext context){
+  double? myHeight(BuildContext context){
     double y = MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio;
     double x = MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio;
     final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
@@ -1032,19 +1058,34 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             //crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              isConnectedToInternet == true? Container(
+                margin: EdgeInsets.only(bottom:10,top: 10),
+
+                width: myMediumBanner != null?myMediumBanner?.size.width.toDouble():0,
+                height: myMediumBanner != null?myMediumBanner?.size.height.toDouble():0,
+                child: myMediumBanner != null?Container(
+                    margin: EdgeInsets.only(bottom: 10),
+
+                    // clipBehavior: Clip.antiAlias,
+                    child: AdWidget(ad: myMediumBanner!)):Container(height: 1),):Container(
+                //child: ,
+              ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                 Container(
                   margin: EdgeInsets.only(left: 0,top: 10),
-                  padding: EdgeInsets.only(top: (myHeight(context)/100)*0.2),
+                  padding: EdgeInsets.only(top: (myHeight(context)!/100)*0.2),
 
                   width: (MediaQuery.of(context).size.width-14)/2.1,
                   height: MediaQuery.of(context).size.height*0.2,
-                  child: RaisedButton(
-                    color: Colors.lightGreen,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                     ),
                     child: Container(
                         //padding: EdgeInsets.only(top: (myHeight(context)/100)*0.2),
@@ -1062,7 +1103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       Container(
                        // padding: EdgeInsets.only(top: 3),
-                        child: Text("GALLERY",style: TextStyle(fontWeight: FontWeight.bold,color:Colors.black),),
+                        child: Text("SAVED",style: TextStyle(fontWeight: FontWeight.bold,color:Colors.black),),
                       ),
                     ],)),
                     onPressed: (){
@@ -1070,11 +1111,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement + 1;*/
 
                       if(Ads.checkAdIntervals() == true){
-                        Ads.createInterstitialAd();
-                        myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
+                        Ads.showInterstitialAd();
+                       // myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
 
                         Ads.delayAdDialog(context);
-                        Future.delayed(Duration(seconds: 3),(){
+                        Future.delayed(Duration(seconds: 0),(){
                           Navigator.of(context).pop();
                           Navigator.push(context, MaterialPageRoute(builder: (context) => ImageCards()));
 
@@ -1098,16 +1139,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   Container(
                     margin: EdgeInsets.only(left: 7,top: 10),
-                    padding: EdgeInsets.only(top: (myHeight(context)/100)*0.2),
+                    padding: EdgeInsets.only(top: (myHeight(context)!/100)*0.2),
                     width: (MediaQuery.of(context).size.width-14)/2.1,
                     height: MediaQuery.of(context).size.height*0.2,
-                    child: RaisedButton(
-                      color: Colors.lightGreen,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.lightGreen,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
                       ),
                       child: Container(
-                          padding: EdgeInsets.only(top: (myHeight(context)/100)*0.2),
+                          padding: EdgeInsets.only(top: (myHeight(context)!/100)*0.2),
                           child: Column(children: [
                         Card(
                           color: Colors.lightGreen,
@@ -1121,7 +1164,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Container(
                           //padding: EdgeInsets.only(top: 3),
-                          child: Text("GRADIENTS",style: TextStyle(fontWeight: FontWeight.bold,color:Colors.black),),
+                          child: Text("WORK PAD",style: TextStyle(fontWeight: FontWeight.bold,color:Colors.black),),
                         ),
                       ],)),
                       onPressed: (){
@@ -1132,18 +1175,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         //Navigator.push(context, MaterialPageRoute(builder: (context) => EditImage()));
 
                         if(Ads.checkAdIntervals() == true){
-                          Ads.createInterstitialAd();
-                          myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
+                          Ads.showInterstitialAd();
+                          //myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
 
                           Ads.delayAdDialog(context);
-                          Future.delayed(Duration(seconds: 3),(){
+                          Future.delayed(Duration(seconds: 0),(){
                             Navigator.of(context).pop();
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(false,null,null)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(false,File(''),[])));
 
                           });
                         }else{
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(false,null,null)));
-                            myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(false,File(''),[])));
+                           // myGlobal.myAdIntervalIncrement = myGlobal.myAdIntervalIncrement +1;
                         }
 
                       },
@@ -1155,16 +1198,19 @@ class _MyHomePageState extends State<MyHomePage> {
                children: [
                Container(
                  margin: EdgeInsets.only(left: 0,top: 10),
-                 padding: EdgeInsets.only(top: (myHeight(context)/100)*0.2),
+                 padding: EdgeInsets.only(top: (myHeight(context)!/100)*0.2),
                  width: (MediaQuery.of(context).size.width-14)/2.1,
                  height: MediaQuery.of(context).size.height*0.2,
-                 child: RaisedButton(
-                   color: Colors.lightGreen,
-                   shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(15.0),
+                 child: ElevatedButton(
+                   style: ElevatedButton.styleFrom(
+                     backgroundColor: Colors.lightGreen,
+                     shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(15.0),
+                     ),
                    ),
+
                    child: Container(
-                       padding: EdgeInsets.only(top: (myHeight(context)/100)*0.2),
+                       padding: EdgeInsets.only(top: (myHeight(context)!/100)*0.2),
                        child: Column(children: [
                      Card(
                        color: Colors.lightGreen,
@@ -1178,7 +1224,7 @@ class _MyHomePageState extends State<MyHomePage> {
                      ),
                      Container(
                        //padding: EdgeInsets.only(top: 3),
-                       child: Text("TEXT OVER",style: TextStyle(fontWeight: FontWeight.bold,color:Colors.black),),
+                       child: Text("GALLERY",style: TextStyle(fontWeight: FontWeight.bold,color:Colors.black),),
                      ),
                    ],)),
                    onPressed: (){
@@ -1191,16 +1237,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
                Container(
                  margin: EdgeInsets.only(left: 7,top: 10),
-                 padding: EdgeInsets.only(top: (myHeight(context)/100)*0.2),
+                 padding: EdgeInsets.only(top: (myHeight(context)!/100)*0.2),
                  width: (MediaQuery.of(context).size.width-14)/2.1,
                  height: MediaQuery.of(context).size.height*0.2,
-                 child: RaisedButton(
-                   color: Colors.lightGreen,
-                   shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(15.0),
+                 child: ElevatedButton(
+                   style: ElevatedButton.styleFrom(
+                     backgroundColor: Colors.lightGreen,
+                     shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(15.0),
+                     ),
                    ),
                    child: Container(
-                       padding: EdgeInsets.only(top: (myHeight(context)/100)*0.2),
+                       padding: EdgeInsets.only(top: (myHeight(context)!/100)*0.2),
                        child: Column(children: [
                      Card(
                        color: Colors.lightGreen,
@@ -1228,22 +1276,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
               Container(child:Divider(color: Colors.brown,) ,),
 
-              isConnectedToInternet == true? Container(
-                margin: EdgeInsets.only(bottom:10,top: 10),
 
-                width: myMediumBanner != null?myMediumBanner.size.width.toDouble():0,
-                height: myMediumBanner != null?myMediumBanner.size.height.toDouble():0,
-                child: myMediumBanner != null?Card(
-                    margin: EdgeInsets.only(left: 10,right: 10,bottom: 10),
-                    shape: RoundedRectangleBorder(
-                     // side: BorderSide(width: 3,color: Colors.deepPurpleAccent),
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15),topRight: Radius.circular(15),
-                          bottomLeft: Radius.circular(15),bottomRight: Radius.circular(15)), ),
-                    clipBehavior: Clip.antiAlias,
-                    child: AdWidget(ad: myMediumBanner)):Container(height: 1),):Container(
-                //child: ,
-              ),
 
             ],),
         ),

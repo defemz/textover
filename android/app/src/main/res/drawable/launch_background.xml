@@ -7,6 +7,6 @@
      <item>
         <bitmap
             android:gravity="center"
-            android:src="@mipmap/startup" />
+            android:src="@drawable/startup" />
     </item>
 </layer-list>

@@ -9,7 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share/share.dart';
+//import 'package:share/share.dart';
 import 'package:textover/textover.dart';
 import 'dart:io' as io;
 import 'global.dart' as myGlobal;
@@ -33,7 +33,7 @@ class _MyEmojisState extends State<Emojis> {
   List<String> emojiList = [];
 
   int swipeIndex = 0;
-  File _imagePicked;
+  File? _imagePicked;
   final picker = ImagePicker();
 
   bool toShowAdBanner = true;
@@ -90,7 +90,7 @@ class _MyEmojisState extends State<Emojis> {
   }
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.values[1]);
+    final pickedFile = await picker.pickImage(source: ImageSource.values[1]);
 
     setState(() {
       if (pickedFile != null) {
@@ -111,7 +111,7 @@ class _MyEmojisState extends State<Emojis> {
     return MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - kToolbarHeight- kBottomNavigationBarHeight - 70 ;
   }*/
 
-  double myFontSize(BuildContext context){
+  double? myFontSize(BuildContext context){
     double y = MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio;
     double x = MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio;
     final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
@@ -174,7 +174,7 @@ class _MyEmojisState extends State<Emojis> {
 
   }
 
-  double myHeight(BuildContext context){
+  double? myHeight(BuildContext context){
     double y = MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio;
     double x = MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio;
     final data = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
@@ -288,10 +288,10 @@ class _MyEmojisState extends State<Emojis> {
                             //print(imageList[index]);
                             if(myGlobal.emojiShowCount < 6){
                             myGlobal.emojiSelectedList.add(emojiList[index]);
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(myGlobal.isItImageBackground == true?true:false,myGlobal.isItImageBackground == true?myGlobal.backImage:null,myGlobal.emojiSelectedList)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(myGlobal.isItImageBackground == true?true:false,myGlobal.isItImageBackground == true?myGlobal.backImage!:File(''),myGlobal.emojiSelectedList)));
                             myGlobal.emojiShowCount++;
                             }else{
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(myGlobal.isItImageBackground == true?true:false,myGlobal.isItImageBackground == true?myGlobal.backImage:null,myGlobal.emojiSelectedList)));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => TextOver(myGlobal.isItImageBackground == true?true:false,myGlobal.isItImageBackground == true?myGlobal.backImage!:File(''),myGlobal.emojiSelectedList)));
 
                             }
                           },
